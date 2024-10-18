@@ -72,15 +72,15 @@ module AHB_master_wrapper (
     assign r_HTRANS[1] = ahb_HTRANS[0];
 
     /* connector: 0 not reverse; 1 reverse */
-    assign ahb_HRDATA = (1'b1) ? HRDATA : r_HRDATA;
-    assign HWDATA = (1'b1) ? ahb_wdata_i : r_HWDATA;
-    assign HADDR = (1'b0) ? ahb_HADDR : r_HADDR;
-    assign HBURST = (1'b1) ? ahb_HBURST : r_HBURST;
-    assign HSIZE = (1'b1) ? ahb_HSIZE : r_HSIZE;
-    assign HTRANS = (1'b1) ? ahb_HTRANS : r_HTRANS;
-    assign HPROT = (1'b1) ? ahb_HPROT : r_HPROT;
+    assign ahb_HRDATA = (1'b1) ? r_HRDATA : HRDATA;
+    assign HWDATA = (1'b1) ? r_HWDATA : ahb_wdata_i;
+    assign HADDR = (1'b1) ? r_HADDR : ahb_HADDR;
+    assign HBURST = (1'b1) ? r_HBURST : ahb_HBURST;
+    assign HSIZE = (1'b1) ? r_HSIZE : ahb_HSIZE;
+    assign HTRANS = (1'b1) ? r_HTRANS : ahb_HTRANS;
+    assign HPROT = (1'b1) ? r_HPROT : ahb_HPROT;
 
-    assign HADDR_26b = HADDR[25:0];
+    assign HADDR_26b = HADDR[31-:26];
 
     assign addr = (r_valid_i===1'b1)?ahb_raddr_i:(w_valid_i===1'b1)?ahb_waddr_i:32'hzzzzzzzz;
     assign read = (r_valid_i === 1'b1) ? 1'b1 : (w_valid_i === 1'b1) ? 1'b0 : 1'bz;

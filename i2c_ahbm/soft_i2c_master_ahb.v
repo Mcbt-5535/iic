@@ -35,7 +35,16 @@ module soft_i2c_master_ahb (
     reg [              2:0] flg_i2c;
     reg                     flg_nack;
     reg [WIDTH_I2C_CMD-1:0] i2c_command;
+    reg [WIDTH_I2C_CMD-1:0] i2c_command_prev;
 
+
+    always @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) begin
+            i2c_command_prev <= {WIDTH_I2C_CMD{1'b0}};
+        end else begin
+            i2c_command_prev <= i2c_command;
+        end
+    end
     always @(posedge clk_i or negedge rst_ni) begin : i2c_command_change
         if (!rst_ni) begin
             data_i2c_w <= 8'h0;
@@ -75,22 +84,22 @@ module soft_i2c_master_ahb (
                     flg_nack <= 1'b1;
                 end
                 IIC_READ0 + 61: begin
-                    ahb_rdata_o <= data_i2c_r;
-                    flg_i2c <= READ;
+                    if (i2c_command_prev != i2c_command) ahb_rdata_o[0+:8] <= data_i2c_r;
+                    flg_i2c  <= READ;
                     flg_nack <= 1'b1;
                 end
                 IIC_READ0 + 62: begin
-                    ahb_rdata_o <= {data_i2c_r << 8, data_i2c_r};
-                    flg_i2c <= READ;
+                    if (i2c_command_prev != i2c_command) ahb_rdata_o[8+:8] <= data_i2c_r;
+                    flg_i2c  <= READ;
                     flg_nack <= 1'b1;
                 end
                 IIC_READ0 + 63: begin
-                    ahb_rdata_o <= {data_i2c_r << 8, data_i2c_r};
-                    flg_i2c <= READ;
+                    if (i2c_command_prev != i2c_command) ahb_rdata_o[16+:8] <= data_i2c_r;
+                    flg_i2c  <= READ;
                     flg_nack <= 1'b1;
                 end
                 IIC_READ0 + 64: begin
-                    ahb_rdata_o <= {data_i2c_r << 8, data_i2c_r};
+                    if (i2c_command_prev != i2c_command) ahb_rdata_o[24+:8] <= data_i2c_r;
                     ahb_r_vaild_o <= 1'b1;
                     flg_nack <= 1'b1;
                     flg_i2c <= STOP;
@@ -148,23 +157,24 @@ module soft_i2c_master_ahb (
                     flg_nack <= 1'b1;
                 end
                 IIC_READ1 + 61: begin
-                    ahb_rdata_o <= data_i2c_r;
-                    flg_i2c <= READ;
+                    if (i2c_command_prev != i2c_command) ahb_rdata_o[0+:8] <= data_i2c_r;
+                    flg_i2c  <= READ;
                     flg_nack <= 1'b1;
                 end
                 IIC_READ1 + 62: begin
-                    ahb_rdata_o <= {data_i2c_r << 8, data_i2c_r};
-                    flg_i2c <= READ;
+                    if (i2c_command_prev != i2c_command) ahb_rdata_o[8+:8] <= data_i2c_r;
+                    flg_i2c  <= READ;
                     flg_nack <= 1'b1;
                 end
                 IIC_READ1 + 63: begin
-                    ahb_rdata_o <= {data_i2c_r << 8, data_i2c_r};
-                    flg_i2c <= READ;
+                    if (i2c_command_prev != i2c_command) ahb_rdata_o[16+:8] <= data_i2c_r;
+                    flg_i2c  <= READ;
                     flg_nack <= 1'b1;
                 end
                 IIC_READ1 + 64: begin
-                    ahb_rdata_o <= {data_i2c_r << 8, data_i2c_r};
+                    if (i2c_command_prev != i2c_command) ahb_rdata_o[24+:8] <= data_i2c_r;
                     ahb_r_vaild_o <= 1'b1;
+                    flg_nack <= 1'b1;
                     flg_i2c <= STOP;
                 end
 

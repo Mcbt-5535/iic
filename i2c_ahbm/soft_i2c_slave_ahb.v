@@ -66,7 +66,7 @@ module soft_i2c_slave_ahb #(
     wire wr_dat2stop;
     wire rd_dat2stop;
     wire stop2idle;
-
+    reg [31:0] ahb_rdata_i_prev;
 
     /*+++++++++++++++++++++++++++++++++ahb+++++++++++++++++++++++++++++++++*/
     reg [03:00] RW_Addr_prev;  // Read/write address signal	
@@ -79,42 +79,16 @@ module soft_i2c_slave_ahb #(
             ahb_wdata_o <= 32'h0;
         end else begin
             if (RW_Addr_prev == 4'h7 && RW_Addr == 4'h8) begin
-                w_valid_o <= 1'b1;
-                ahb_waddr_o <= {
-                    mem[3][3:0],
-                    mem[3][7:4],
-                    mem[2][3:0],
-                    mem[2][7:4],
-                    mem[1][3:0],
-                    mem[1][7:4],
-                    mem[0][3:0],
-                    mem[0][7:4]
-                };
-                ahb_wdata_o <= {
-                    mem[7][3:0],
-                    mem[7][7:4],
-                    mem[6][3:0],
-                    mem[6][7:4],
-                    mem[5][3:0],
-                    mem[5][7:4],
-                    mem[4][3:0],
-                    mem[4][7:4]
-                };
-            end else if (RW_Addr_prev == 4'hb && RW_Addr == 4'hc) begin
-                r_valid_o <= 1'b1;
-                ahb_raddr_o <= {
-                    mem[11][3:0],
-                    mem[11][7:4],
-                    mem[10][3:0],
-                    mem[10][7:4],
-                    mem[9][3:0],
-                    mem[9][7:4],
-                    mem[8][3:0],
-                    mem[8][7:4]
-                };
-            end else if (RW_Addr == 4'hc) begin
+                w_valid_o   <= 1'b1;
+                ahb_waddr_o <= {mem[0], mem[1], mem[2], mem[3]};
+                ahb_wdata_o <= {mem[4], mem[5], mem[6], mem[7]};
+            end else if (RW_Addr == 4'hc && !(ahb_rdata_i == ahb_rdata_i_prev)) begin
                 {mem[15], mem[14], mem[13], mem[12]} <= ahb_rdata_i;
+            end else if (RW_Addr_prev == 4'hb && RW_Addr == 4'hc) begin
+                r_valid_o   <= 1'b1;
+                ahb_raddr_o <= {mem[8], mem[9], mem[10], mem[11]};
             end else begin
+                ahb_rdata_i_prev <= ahb_rdata_i;
                 RW_Addr_prev <= RW_Addr;
                 w_valid_o <= 1'b0;
                 r_valid_o <= 1'b0;
