@@ -1,6 +1,6 @@
 # i2c
 ## i2c
-* verilog soft i2c_master 和 i2c_slave  
+* verilog soft i2c_master 和 i2c_slave1  
 * slave的device id为`0x66`  
 * i2c_slave 有一个存储器`reg [07:00] memery[15:00]`，用来存储数据
 #### master进行读操作：  
